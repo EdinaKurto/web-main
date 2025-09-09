@@ -104,82 +104,69 @@
   </div>
 </div>
 
-<!-- Include jQuery and DataTables JS/CSS -->
+
 <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css" />
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
 
 <script>
-$(document).ready(function() {
-  // Fetch customers and populate table with DataTables
-  function loadCustomers() {
-    $.ajax({
-      url: '/api/customers', // Adjust to your backend endpoint
-      method: 'GET',
-      dataType: 'json',
-      success: function(data) {
-        const tbody = $('#customer-details tbody');
-        tbody.empty();
-        data.forEach(function(customer) {
-          tbody.append(`
-            <tr>
-              <td class="text-center">
-                <button
-                  type="button"
-                  class="btn btn-success details-btn"
-                  data-bs-toggle="modal"
-                  data-bs-target="#customer-details-modal"
-                  data-bs-id="${customer.id}"
-                >
-                  Details
-                </button>
-              </td>
-              <td>${customer.full_name}</td>
-              <td>${customer.total_amount.toFixed(2)}</td>
-            </tr>
-          `);
-        });
-        // Initialize DataTable (with search & pagination)
-        $('#customer-details').DataTable({
-          destroy: true
-        });
-      }
+
+  $(document).ready(function () {
+
+    const table = $('#customer-details').DataTable({
+      ajax: {
+        url: 'http://localhost:3000/api/customers', 
+        dataSrc: ''
+      },
+      columns: [
+        {
+          data: 'id',
+          render: function (data, type, row) {
+            return `<button type="button" class="btn btn-success details-btn" data-bs-toggle="modal" data-bs-target="#customer-details-modal" data-bs-id="${data}">Details</button>`;
+          },
+          orderable: false,
+          searchable: false
+        },
+        { data: 'full_name' },
+        { data: 'total_amount' }
+      ],
+      paging: true,
+      searching: true,
+      destroy: true 
     });
-  }
 
-  loadCustomers();
 
-  // Details button click handler
-  $(document).on('click', '.details-btn', function() {
-    const customerId = $(this).data('bs-id');
-    $.ajax({
-      url: `/api/customers/${customerId}/details`, // Adjust to your backend endpoint
-      method: 'GET',
-      dataType: 'json',
-      success: function(data) {
-        $('#customer-details-label').text(data.full_name + ' Details');
-        let rows = '';
-        let total = 0;
-        data.rentals.forEach(function(rental, idx) {
+    $('#customer-details tbody').on('click', '.details-btn', function () {
+      const customerId = $(this).data('bs-id');
+
+      $.ajax({
+        url: `http://localhost:3000/api/customers/${customerId}/details`,
+        method: 'GET',
+        success: function (data) {
+
+          $('#customer-details-label').text(data.full_name + ' - Details');
+          let rows = '';
+          let total = 0;
+          data.rentals.forEach((rental, idx) => {
+            rows += `
+              <tr>
+                <th scope="row">${idx + 1}</th>
+                <td>${rental.rental_date}</td>
+                <td>${rental.film_title}</td>
+                <td>${rental.payment_amount.toFixed(2)}</td>
+              </tr>
+            `;
+            total += rental.payment_amount;
+          });
           rows += `
             <tr>
-              <th scope="row">${idx + 1}</th>
-              <td>${rental.rental_date}</td>
-              <td>${rental.film_title}</td>
-              <td>${rental.payment_amount.toFixed(2)}</td>
+              <td colspan="3"><strong>Total bill</strong></td>
+              <td>${total.toFixed(2)}</td>
             </tr>
           `;
-          total += rental.payment_amount;
-        });
-        rows += `
-          <tr>
-            <td colspan="3"><strong>Total bill</strong></td>
-            <td>${total.toFixed(2)}</td>
-          </tr>
-        `;
-        $('#customer-details-modal tbody').html(rows);
-      }
+          $('#customer-details-modal tbody').html(rows);
+        }
+      });
     });
   });
-});
 </script>
