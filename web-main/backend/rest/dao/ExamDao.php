@@ -13,7 +13,7 @@ class ExamDao
       $port     = "3306";        // MySQL default port
       $dbName   = "sakila";      // make sure this DB exists in phpMyAdmin
       $username = "root";        // default user
-      $password = "hannan12"; 
+      $password = "edina12"; 
 
         echo "<br>Using DB host: $host";
 
@@ -121,6 +121,4 @@ public function get_customer_rentals($customer_id) {
 }
 
 }
-/* 
-hannan */
 
