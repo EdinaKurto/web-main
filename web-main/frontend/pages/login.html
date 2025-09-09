@@ -36,14 +36,34 @@
 </body>
 
 <script type="text/javascript">
-    /*TODO #1 Add code to check whether user is logged in or not.
-     * If user is already logged in (token exists) redirect to index.html (5 points)
-     */
+    // TODO #1: Redirect if already logged in
+    const token = localStorage.getItem('token');
+    if (token) {
+        window.location.href = 'index.html';
+    }
 
-    /* TODO #2
-     * If user is not logged in (token does not exists or is not valid) implement AJAX call to rest/login
-     * when login button is clicked (5 points)
-     */
+    // TODO #2: AJAX login
+    $('#login-form').submit(function (e) {
+        e.preventDefault();
+        const email = $('input[name="email"]').val();
+        const password = $('input[name="password"]').val();
+
+        $.ajax({
+            url: '/rest/login',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({ email, password }),
+            success: function (response) {
+                // Assuming response contains token
+                localStorage.setItem('token', response.token);
+                toastr.success('Login successful!');
+                window.location.href = 'index.html';
+            },
+            error: function (xhr) {
+                toastr.error('Login failed. Please check your credentials.');
+            }
+        });
+    });
 </script>
 
 </html>
