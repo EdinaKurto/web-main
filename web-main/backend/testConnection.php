@@ -6,7 +6,7 @@ require_once __DIR__ . '/rest/dao/ExamDao.php';
 
 try {
     $dao = new ExamDao();
-    echo "✅ DAO initialized and connection successful!<br>";
+    echo "DAO initialized and connection successful!<br>";
 
     // call the helper method
     $tables = $dao->showTables();
@@ -16,5 +16,5 @@ try {
     echo "</pre>";
 
 } catch (PDOException $e) {
-    echo "❌ Connection failed: " . $e->getMessage();
+    echo "Connection failed: " . $e->getMessage();
 }
