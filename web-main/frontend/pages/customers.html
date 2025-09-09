@@ -111,17 +111,15 @@
 
 <script>
 $(document).ready(function() {
-  // 1. Fetch customers and populate table with DataTables
+  // Fetch customers and populate table with DataTables
   function loadCustomers() {
     $.ajax({
       url: '/api/customers', // Adjust to your backend endpoint
       method: 'GET',
       dataType: 'json',
       success: function(data) {
-        // Clear existing rows
         const tbody = $('#customer-details tbody');
         tbody.empty();
-        // Populate rows
         data.forEach(function(customer) {
           tbody.append(`
             <tr>
@@ -143,7 +141,7 @@ $(document).ready(function() {
         });
         // Initialize DataTable (with search & pagination)
         $('#customer-details').DataTable({
-          destroy: true // Re-initialize if already exists
+          destroy: true
         });
       }
     });
@@ -151,7 +149,7 @@ $(document).ready(function() {
 
   loadCustomers();
 
-  // 2. Details button click handler
+  // Details button click handler
   $(document).on('click', '.details-btn', function() {
     const customerId = $(this).data('bs-id');
     $.ajax({
@@ -159,9 +157,7 @@ $(document).ready(function() {
       method: 'GET',
       dataType: 'json',
       success: function(data) {
-        // Set modal title
         $('#customer-details-label').text(data.full_name + ' Details');
-        // Populate modal table
         let rows = '';
         let total = 0;
         data.rentals.forEach(function(rental, idx) {
