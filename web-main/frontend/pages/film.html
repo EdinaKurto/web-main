@@ -61,102 +61,102 @@
   </div>
 </div>
 
-<!-- Edit Film Modal -->
+<!-- Modal -->
+<!--TODO add modal with edit film form properties -->
+
 <div class="modal fade" id="edit-film-modal" tabindex="-1" aria-labelledby="editFilmModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <form id="edit-film-form">
-      <div class="modal-content">
+    <div class="modal-content">
+      <form id="edit-film-form">
         <div class="modal-header">
-          <h5 class="modal-title" id="editFilmModalLabel">Edit Film</h5>
+          <h5 class="modal-title" id="editFilmModalLabel">Edit</h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          <input type="hidden" id="edit-film-id" name="id">
+          <input type="hidden" id="edit-film-id" name="id" />
           <div class="mb-3">
-            <label for="edit-category-id" class="form-label">Category ID</label>
-            <input type="number" class="form-control" id="edit-category-id" name="category_id" required>
+            <label for="edit-category-id" class="form-label">ID</label>
+            <input type="number" class="form-control" id="edit-category-id" name="category_id" required />
           </div>
           <div class="mb-3">
-            <label for="edit-category-name" class="form-label">Category Name</label>
-            <input type="text" class="form-control" id="edit-category-name" name="category_name" required>
+            <label for="edit-category-name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="edit-category-name" name="category_name" required />
           </div>
           <div class="mb-3">
-            <label for="edit-total-movies" class="form-label">Total Number of Movies</label>
-            <input type="number" class="form-control" id="edit-total-movies" name="total_movies" required>
+            <label for="edit-total-movies" class="form-label">Total</label>
+            <input type="number" class="form-control" id="edit-total-movies" name="total_movies" required />
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="submit" class="btn btn-primary">Save</button>
         </div>
-      </div>
-    </form>
+      </form>
+    </div>
   </div>
 </div>
 
 <script>
-const API_BASE = 'https://your-production-domain.com/api'; // Replace with your actual backend API domain
+  let films = [
+    { id: 1, category_id: 1, category_name: "Action", total_movies: 64 },
+    { id: 2, category_id: 2, category_name: "Animation", total_movies: 66 }
+  ];
 
-// Populate the table with data from the database
-async function loadFilms() {
-  const res = await fetch(`${API_BASE}/films`);
-  const films = await res.json();
-  const tbody = document.querySelector('#film-performance tbody');
-  tbody.innerHTML = '';
-  films.forEach(film => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td class="text-center">
-        <div class="btn-group" role="group">
-          <button type="button" class="btn btn-warning" onclick="FilmService.edit_film(${film.id})">Edit</button>
-          <button type="button" class="btn btn-danger" onclick="FilmService.delete_film(${film.id})">Delete</button>
-        </div>
-      </td>
-      <td>${film.category_id}</td>
-      <td>${film.category_name}</td>
-      <td>${film.total_movies}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// delete logic
-const FilmService = {
-  async delete_film(id) {
-    if (!confirm('Are you sure you want to delete this film?')) return;
-    await fetch(`${API_BASE}/films/${id}`, { method: 'DELETE' });
-    loadFilms();
-  },
-  // Fetch film by id and  Populate modal
-  async edit_film(id) {
-    const res = await fetch(`${API_BASE}/films/${id}`);
-    const film = await res.json();
-    document.getElementById('edit-film-id').value = film.id;
-    document.getElementById('edit-category-id').value = film.category_id;
-    document.getElementById('edit-category-name').value = film.category_name;
-    document.getElementById('edit-total-movies').value = film.total_movies;
-    const modal = new bootstrap.Modal(document.getElementById('edit-film-modal'));
-    modal.show();
+  function renderTable() {
+    const tbody = document.querySelector("#film-performance tbody");
+    tbody.innerHTML = "";
+    films.forEach(film => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="text-center">
+          <div class="btn-group" role="group">
+            <button type="button" class="btn btn-warning" onclick="FilmService.edit_film(${film.id})">Edit</button>
+            <button type="button" class="btn btn-danger" onclick="FilmService.delete_film(${film.id})">Delete</button>
+          </div>
+        </td>
+        <td>${film.category_id}</td>
+        <td>${film.category_name}</td>
+        <td>${film.total_movies}</td>
+      `;
+      tbody.appendChild(tr);
+    });
   }
-};
 
-//Persist changes when "Save changes" is clicked
-document.getElementById('edit-film-form').addEventListener('submit', async function(e) {
-  e.preventDefault();
-  const id = document.getElementById('edit-film-id').value;
-  const data = {
-    category_id: document.getElementById('edit-category-id').value,
-    category_name: document.getElementById('edit-category-name').value,
-    total_movies: document.getElementById('edit-total-movies').value
+  window.FilmService = {
+    edit_film: function(id) {
+      const film = films.find(f => f.id === id);
+      if (!film) return;
+      document.getElementById("edit-film-id").value = film.id;
+      document.getElementById("edit-category-id").value = film.category_id;
+      document.getElementById("edit-category-name").value = film.category_name;
+      document.getElementById("edit-total-movies").value = film.total_movies;
+      const modal = new bootstrap.Modal(document.getElementById('edit-film-modal'));
+      modal.show();
+    },
+    delete_film: function(id) {
+      if (confirm("Are you sure you want to delete this film?")) {
+        films = films.filter(f => f.id !== id);
+        renderTable();
+      }
+    }
   };
-  await fetch(`${API_BASE}/films/${id}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  });
-  bootstrap.Modal.getInstance(document.getElementById('edit-film-modal')).hide();
-  loadFilms();
-});
 
-loadFilms();
+  document.addEventListener("DOMContentLoaded", function() {
+    renderTable();
+
+    document.getElementById("edit-film-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById("edit-film-id").value);
+      const category_id = parseInt(document.getElementById("edit-category-id").value);
+      const category_name = document.getElementById("edit-category-name").value;
+      const total_movies = parseInt(document.getElementById("edit-total-movies").value);
+
+      const idx = films.findIndex(f => f.id === id);
+      if (idx !== -1) {
+        films[idx] = { id, category_id, category_name, total_movies };
+        renderTable();
+        bootstrap.Modal.getInstance(document.getElementById('edit-film-modal')).hide();
+      }
+    });
+  });
 </script>
