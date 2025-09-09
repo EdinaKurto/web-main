@@ -122,3 +122,15 @@ public function get_customer_rentals($customer_id) {
 
 }
 
+public function get_customers_report() {
+    $stmt = $this->connection->query("
+        SELECT c.customer_id AS id,
+               CONCAT(c.first_name, ' ', c.last_name) AS customer_full_name,
+               SUM(p.amount) AS total_amount
+        FROM customer c
+        JOIN payment p ON c.customer_id = p.customer_id
+        GROUP BY c.customer_id, c.first_name, c.last_name
+        ORDER BY total_amount DESC
+    ");
+    return $stmt->fetchAll();
+}
