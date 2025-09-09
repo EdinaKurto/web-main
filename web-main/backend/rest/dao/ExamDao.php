@@ -62,6 +62,23 @@ public function login($data) {
   return $stmt->fetchAll();
   }
 
+  //public function film_performance_report() {
+  // $sql = "
+  //      SELECT
+  //          c.category_id AS id,
+  //          c.name        AS name,
+  //          COUNT(fc.film_id) AS total
+  //      FROM category c
+  //      LEFT JOIN film_category fc
+  //             ON fc.category_id = c.category_id
+  //      GROUP BY c.category_id, c.name
+   //     ORDER BY total DESC
+  //  ";
+   // $stmt = $this->connection->query($sql); // note: $this->connection
+   // return $stmt->fetchAll();
+//}
+
+
 
 
   public function delete_film($film_id) {
