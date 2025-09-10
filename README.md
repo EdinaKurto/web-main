@@ -187,3 +187,9 @@ public function film_performance_report() {
     $stmt->execute();
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
+
+
+Flight::route('GET /film/performance', function () {
+    $dao = new ExamDao();
+    Flight::json($dao->film_performance_report());
+});
