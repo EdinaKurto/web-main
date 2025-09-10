@@ -126,14 +126,6 @@ Flight::route('POST /login', function () {
         $result = $service->get_customer_rentals($customer_id);
         Flight::json($result);
     });
-    
-    
-
-
-
-
-
-
 
 
 
