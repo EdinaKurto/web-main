@@ -163,3 +163,27 @@
     });
   });
 </script>
+
+
+
+
+
+
+
+
+public function film_performance_report() {
+    $sql = "
+        SELECT
+            c.category_id AS id,
+            c.name        AS name,
+            COUNT(f.film_id) AS total
+        FROM category c
+        LEFT JOIN film_category fc ON fc.category_id = c.category_id
+        LEFT JOIN film         f  ON f.film_id      = fc.film_id
+        GROUP BY c.category_id, c.name
+        ORDER BY c.category_id
+    ";
+    $stmt = $this->connection->prepare($sql);
+    $stmt->execute();
+    return $stmt->fetchAll(PDO::FETCH_ASSOC);
+}
