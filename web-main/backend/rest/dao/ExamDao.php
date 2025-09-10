@@ -120,4 +120,28 @@ public function get_customer_rentals($customer_id) {
   return $stmt->fetchAll();
 }
 
+
+public function get_customers_report() {
+    $stmt = $this->connection->query("
+        SELECT c.customer_id AS id,
+               CONCAT(c.first_name, ' ', c.last_name) AS customer_full_name,
+               SUM(p.amount) AS total_amount
+        FROM customer c
+        JOIN payment p ON c.customer_id = p.customer_id
+        GROUP BY c.customer_id, c.first_name, c.last_name
+        ORDER BY total_amount DESC
+    ");
+    return $stmt->fetchAll();
+}
+
+
+public function get_film($id) {
+        $stmt = $this->connection->prepare("
+            SELECT film_id AS id, title, description, release_year
+            FROM film
+            WHERE film_id = :id
+        ");
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 }
